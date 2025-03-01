@@ -33,7 +33,7 @@ def obtener_archivos_java(ruta, prompt):
                 file_path = os.path.join(root, file)
                 with open(file_path, "r") as f:
                     content = f.read()
-                con = prompt + "\n''' java\n" + content + "\n'''"
+                con = prompt + "\n" + content + ""
                 archivos.append({"ruta": file_path, "contenido": con})
     return archivos
 
@@ -42,7 +42,10 @@ archivos_java = obtener_archivos_java(ruta, prompt)
 
 
 def send_ollama(url, archivo_java):
-    enviar = {"model": model, "prompt": archivo_java,"stream": False}
+    archivo_java = archivo_java.replace("\r", "")
+    enviar = {"model": model, "prompt": archivo_java, "stream": False}
+    #imprimo el json a enviar
+    print(f"JSON a enviar: {enviar}")
     response = requests.post(url, json=enviar)
     return response
 
@@ -52,6 +55,15 @@ for archivo in archivos_java:
     print(f"Ruta: {archivo['ruta']}")
     print(f"Contenido:\n{archivo['contenido']}\n")
     response = send_ollama(url, archivo["contenido"])
-    print(f"Respuesta: {response.text}")
+    # print(f"Respuesta: {response.text}")
+    # convierto el json de respuesta en un objeto python
+    response_json = response.json()
+    #print(f"Respuesta JSON: {response_json['response']}")
+    #obteno la propiedad response de response_json
+    res= response_json['response']
+    # de res extraigo el contenido entre ```java y ``` y lo guardo en un archivo
+    extraido = re.search(r'```java(.*?)```', res, re.DOTALL)
+    print(f"Extraido: {extraido.group(1)}")
+
+
     time.sleep(15)
-    
