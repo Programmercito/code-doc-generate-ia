@@ -60,7 +60,7 @@ for archivo in archivos_java:
     res= response_json['response']
     extraido = re.search(r'```java(.*?)```', res, re.DOTALL)
     codigofinal=extraido.group(1)
-    with open(archivo["ruta"] + ".doc", "w", encoding="utf-8") as f:
+    with open(archivo["ruta"] , "w", encoding="utf-8") as f:
         f.write(codigofinal)
     print(f"archivo comentado con exito!")
     time.sleep(15)
