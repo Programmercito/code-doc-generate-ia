@@ -53,7 +53,7 @@ def send_ollama(url, archivo_java):
 # Imprimir los resultados
 for archivo in archivos_java:
     print(f"Ruta: {archivo['ruta']}")
-    print(f"Contenido:\n{archivo['contenido']}\n")
+    #print(f"Contenido:\n{archivo['contenido']}\n")
     response = send_ollama(url, archivo["contenido"])
     # print(f"Respuesta: {response.text}")
     # convierto el json de respuesta en un objeto python
@@ -63,7 +63,9 @@ for archivo in archivos_java:
     res= response_json['response']
     # de res extraigo el contenido entre ```java y ``` y lo guardo en un archivo
     extraido = re.search(r'```java(.*?)```', res, re.DOTALL)
-    print(f"Extraido: {extraido.group(1)}")
-
-
+    codigofinal=extraido.group(1)
+    #guardo el contenido el mismo archivo sobreescribiendolo
+    with open(archivo["ruta"]+".doc", "w") as f:
+        f.write(codigofinal)
+    print(f"archivo comentado con exito!")
     time.sleep(15)
