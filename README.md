@@ -43,10 +43,10 @@ This repository contains a Python script designed to automatically document Java
 
 Here is an example of how to set up your .env file:
 ```ini
-ruta=C:/Users/yourusername/projects/java
-prompt=Please document the following Java code:
-url=https://api.ollama.com/document
-model=ollama-model
+ruta=xxxxx
+prompt=Deseo que generes comentarios Javadoc para mis archivos Java. Los comentarios deben incluir los siguientes elementos: Para las clases(esto debe ser previo o antes de la linea de la definicion de la clase NO encima el paquete):1. comentario de para que sirve la clase actual 2. Comentario de autor: debe estar presente @author, pero dejarse vacío.3.  @version: 1.0,  Para los metodos1. Parámetros de entrada: listar y describir cada uno.2. Salida: escribir el valor de retorno.Sigue el formato conocido por oracle.No añadas ningún otro comentario. No es ecesario comentar cada línea, sólo los comentarios requeridos para Javadoc.Debes responderme el codigo fuente completo mas su javadoc como indique , no puedes quitar ni una linea de codigo 
+url=http://localhost:11434/api/generate
+model=deepseek-coder-v2
 ```
 
 ## Happy Coding!
