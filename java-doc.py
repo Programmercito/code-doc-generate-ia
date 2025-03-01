@@ -5,6 +5,7 @@ from dotenv import load_dotenv, find_dotenv
 import fnmatch
 import re
 import time
+import json
 
 # Verificar si el archivo .env existe y cargar las variables de entorno
 dotenv_path = find_dotenv()
@@ -53,19 +54,13 @@ def send_ollama(url, archivo_java):
 # Imprimir los resultados
 for archivo in archivos_java:
     print(f"Ruta: {archivo['ruta']}")
-    #print(f"Contenido:\n{archivo['contenido']}\n")
     response = send_ollama(url, archivo["contenido"])
-    # print(f"Respuesta: {response.text}")
-    # convierto el json de respuesta en un objeto python
-    response_json = response.json()
-    #print(f"Respuesta JSON: {response_json['response']}")
-    #obteno la propiedad response de response_json
+    response_text = response.content.decode('utf-8')
+    response_json = json.loads(response_text)
     res= response_json['response']
-    # de res extraigo el contenido entre ```java y ``` y lo guardo en un archivo
     extraido = re.search(r'```java(.*?)```', res, re.DOTALL)
     codigofinal=extraido.group(1)
-    #guardo el contenido el mismo archivo sobreescribiendolo
-    with open(archivo["ruta"]+".doc", "w") as f:
+    with open(archivo["ruta"] + ".doc", "w", encoding="utf-8") as f:
         f.write(codigofinal)
     print(f"archivo comentado con exito!")
     time.sleep(15)
