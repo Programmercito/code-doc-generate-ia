@@ -1,4 +1,5 @@
 # imprimo start script
+
 import os
 import requests
 from dotenv import load_dotenv, find_dotenv
@@ -6,6 +7,8 @@ import fnmatch
 import re
 import time
 import json
+
+# Script dise;ado para modificar archivos en lote con modelos de IA LOCAL
 
 # Verificar si el archivo .env existe y cargar las variables de entorno
 dotenv_path = find_dotenv()
@@ -36,7 +39,7 @@ def obtener_archivos_java(ruta, prompt):
                 with open(file_path, "r") as f:
                     content = f.read()
                 con = prompt + "\n" + content + ""
-                archivos.append({"ruta": file_path, "contenido": con})
+                archivos.append({"ruta": file_path, "contenido": con, "original": content})
     return archivos
 
 
@@ -47,7 +50,7 @@ def send_ollama(url, archivo_java):
     archivo_java = archivo_java.replace("\r", "")
     enviar = {"model": model, "prompt": archivo_java, "stream": False}
     # imprimo el json a enviar
-    print(f"JSON a enviar: {enviar}")
+    # print(f"JSON a enviar: {enviar}")
     response = requests.post(url, json=enviar)
     return response
 
@@ -56,7 +59,7 @@ def send_ollama(url, archivo_java):
 for archivo in archivos_java:
     print(f"Ruta: {archivo['ruta']}")
     # si comienza con el contenido de hecho no se envia
-    if archivo["contenido"].startswith(hecho):
+    if archivo["original"].startswith(hecho):
         print(f"archivo ya comentado!")
         continue
     response = send_ollama(url, archivo["contenido"])
@@ -64,7 +67,11 @@ for archivo in archivos_java:
     response_json = json.loads(response_text)
     res = response_json["response"]
     extraido = re.search(r"```java(.*?)```", res, re.DOTALL)
-    codigofinal = extraido.group(1)
+    if extraido == None:
+        print(f"Error en el archivo {archivo['ruta']}")
+        codigofinal = res
+    else:
+        codigofinal = extraido.group(1)
     codigofinal = hecho + codigofinal
     with open(archivo["ruta"], "w", encoding="utf-8") as f:
         f.write(codigofinal)

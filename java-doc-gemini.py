@@ -10,7 +10,7 @@ import os
 from google import genai
 from google.genai import types
 
-
+# script diseñado para modificar archivos en lote con modelos de IA en la nube
 
 def generate(prompt):
     client = genai.Client(
