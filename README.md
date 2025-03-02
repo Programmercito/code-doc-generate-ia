@@ -8,7 +8,6 @@ This repository contains Python scripts designed to automatically document code 
 
 - `code-doc.py`: The main script that handles the documentation process using the Ollama API.
 - `code-doc-gemini.py`: An alternative script that handles the documentation process using the Google Gemini API.
-- `ts-doc-gemini.py`: A script specifically for documenting TypeScript files using the Google Gemini API.
 - `.env`: Environment file containing configuration variables.
 
 ## How It Works
