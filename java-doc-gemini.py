@@ -61,6 +61,7 @@ ruta = os.getenv("ruta")
 prompt = os.getenv("prompt")
 url = os.getenv("url")
 model = os.getenv("model")
+hecho = os.getenv("hecho")
 
 print(f"ruta a documentar: {ruta}")
 
@@ -74,21 +75,32 @@ def obtener_archivos_java(ruta, prompt):
                 with open(file_path, "r") as f:
                     content = f.read()
                 con = prompt + "\n" + content + ""
-                archivos.append({"ruta": file_path, "contenido": con})
+                archivos.append({"ruta": file_path, "contenido": con, "original": content})
     return archivos
 
 
 archivos_java = obtener_archivos_java(ruta, prompt)
+
+
 # Imprimir los resultados
 for archivo in archivos_java:
     print(f"Ruta: {archivo['ruta']}")
+    # si comienza con el contenido de hecho no se envia
+    if archivo["original"].startswith(hecho):
+        print(f"archivo ya comentado!")
+        continue
     response = generate(archivo["contenido"])
-    response_text = response
-    extraido = re.search(r'```java(.*?)```', response_text, re.DOTALL)
-    codigofinal=extraido.group(1)
-    with open(archivo["ruta"] , "w", encoding="utf-8") as f:
-        f.write(codigofinal.encode('utf-8').decode('utf-8'))
+    response_text = response.content.decode("utf-8")
+    response_json = json.loads(response_text)
+    res = response_json["response"]
+    extraido = re.search(r"```java(.*?)```", res, re.DOTALL)
+    if extraido == None:
+        print(f"Error en el archivo {archivo['ruta']}")
+        codigofinal = res
+    else:
+        codigofinal = extraido.group(1)
+    codigofinal = hecho + codigofinal
+    with open(archivo["ruta"], "w", encoding="utf-8") as f:
+        f.write(codigofinal)
     print(f"archivo comentado con exito!")
-    time.sleep(20)
-
-
+    time.sleep(15)
