@@ -90,13 +90,11 @@ for archivo in archivos_java:
         print(f"archivo ya comentado!")
         continue
     response = generate(archivo["contenido"])
-    response_text = response.content.decode("utf-8")
-    response_json = json.loads(response_text)
-    res = response_json["response"]
-    extraido = re.search(r"```java(.*?)```", res, re.DOTALL)
+    response_text = response
+    extraido = re.search(r"```(?:java)?(.*?)```", response_text, re.DOTALL)
     if extraido == None:
         print(f"Error en el archivo {archivo['ruta']}")
-        codigofinal = res
+        codigofinal = response_text
     else:
         codigofinal = extraido.group(1)
     codigofinal = hecho + codigofinal
