@@ -12,6 +12,7 @@ from google.genai import types
 
 # script diseñado para modificar archivos en lote con modelos de IA en la nube
 
+
 def generate(prompt):
     client = genai.Client(
         api_key=os.environ.get("key"),
@@ -22,9 +23,7 @@ def generate(prompt):
         types.Content(
             role="user",
             parts=[
-                types.Part.from_text(
-                    text=prompt
-                ),
+                types.Part.from_text(text=prompt),
             ],
         ),
     ]
@@ -42,8 +41,8 @@ def generate(prompt):
         contents=contents,
         config=generate_content_config,
     ):
-        if (chunk.text):
-            response_text+= chunk.text
+        if chunk.text:
+            response_text += chunk.text
     return response_text
 
 
@@ -63,6 +62,8 @@ prompt = os.getenv("prompt")
 url = os.getenv("url")
 model = os.getenv("model")
 hecho = os.getenv("hecho")
+extension = os.getenv("extension")
+prefijo = os.getenv("prefijo")
 
 print(f"ruta a documentar: {ruta}")
 
@@ -71,12 +72,14 @@ def obtener_archivos_java(ruta, prompt):
     archivos = []
     for root, dirs, files in os.walk(ruta):
         for file in files:
-            if file.endswith(".java"):
+            if file.endswith("." + extension):
                 file_path = os.path.join(root, file)
                 with open(file_path, "r") as f:
                     content = f.read()
                 con = prompt + "\n" + content + ""
-                archivos.append({"ruta": file_path, "contenido": con, "original": content})
+                archivos.append(
+                    {"ruta": file_path, "contenido": con, "original": content}
+                )
     return archivos
 
 
@@ -92,7 +95,7 @@ for archivo in archivos_java:
         continue
     response = generate(archivo["contenido"])
     response_text = response
-    extraido = re.search(r"```(?:java)?(.*?)```", response_text, re.DOTALL)
+    extraido = re.search(r"```(?:" + prefijo + ")?(.*?)```", response_text, re.DOTALL)
     if extraido == None:
         print(f"Error en el archivo {archivo['ruta']}")
         codigofinal = response_text

@@ -26,6 +26,8 @@ prompt = os.getenv("prompt")
 url = os.getenv("url")
 model = os.getenv("model")
 hecho = os.getenv("hecho")
+extension = os.getenv("extension")
+prefijo = os.getenv("prefijo")
 
 print(f"ruta a documentar: {ruta}")
 
@@ -34,12 +36,14 @@ def obtener_archivos_java(ruta, prompt):
     archivos = []
     for root, dirs, files in os.walk(ruta):
         for file in files:
-            if file.endswith(".java"):
+            if file.endswith("." + extension):
                 file_path = os.path.join(root, file)
                 with open(file_path, "r") as f:
                     content = f.read()
                 con = prompt + "\n" + content + ""
-                archivos.append({"ruta": file_path, "contenido": con, "original": content})
+                archivos.append(
+                    {"ruta": file_path, "contenido": con, "original": content}
+                )
     return archivos
 
 
@@ -66,7 +70,7 @@ for archivo in archivos_java:
     response_text = response.content.decode("utf-8")
     response_json = json.loads(response_text)
     res = response_json["response"]
-    extraido = re.search(r"```java(.*?)```", res, re.DOTALL)
+    extraido = re.search(r"```" + prefijo + "(.*?)```", res, re.DOTALL)
     if extraido == None:
         print(f"Error en el archivo {archivo['ruta']}")
         codigofinal = res
